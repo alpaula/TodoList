@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {
   StyleSheet,
   ScrollView,
@@ -8,11 +9,22 @@ import {
   TouchableHighlight,
 } from 'react-native';
 
-class Todo extends Component {
-  constructor() {
-    super();
+import { addTodo } from '../dataflow/modules/todo-module';
+
+const mapStateToProps = state => ({
+  todos: state.todo.todos
+});
+
+const mapDispatchToProps = dispatch => ({
+  addTodo: (info) => {
+    dispatch(addTodo(info));
+  },
+});
+
+class TodoList extends Component {
+  constructor(props) {
+    super(props);
     this.state = {
-      todos: [],
       newTodo: ''
     };
   }
@@ -26,18 +38,18 @@ class Todo extends Component {
   }
 
   handlePress = () => {
-    const { todos, newTodo } = this.state;
+    const { newTodo } = this.state;
 
     if (newTodo !== '') {
+      this.props.addTodo(newTodo);
       this.setState({
-        todos: [...todos, newTodo],
         newTodo: ''
       });
     }
   }
-
+  
   render() {
-    const { todos, newTodo } = this.state;
+    const { newTodo } = this.state;
 
     return (
       <ScrollView
@@ -56,8 +68,8 @@ class Todo extends Component {
           </TouchableHighlight>
         </View>
         <View style={styles.containerList}>
-          {todos.map((todo, i) => (
-            <Text key={i} style={styles.itemList}>{todo.name}</Text>
+          {this.props.todos.map((todo, i) => (
+            <Text key={i} style={styles.itemList}>{todo}</Text>
           ))}
         </View>
       </ScrollView>
@@ -111,4 +123,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Todo;
+export default connect(mapStateToProps, mapDispatchToProps)(TodoList);

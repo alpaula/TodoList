@@ -5,15 +5,17 @@
  * @format
  * @flow
  */
-
 import React, { Component } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
 } from 'react-native';
+import { Provider } from 'react-redux';
+
+import store from './src/dataflow/store';
 
 // Components
-import Todo from './app/Todo';
+import Todo from './src/pages/Todo';
 
 class App extends Component {
   constructor() {
@@ -24,7 +26,9 @@ class App extends Component {
   render() {
     return (
       <SafeAreaView style={styles.container}>
-        <Todo />
+        <Provider store={store}>
+          <Todo />
+        </Provider>
       </SafeAreaView>
     );
   }
