@@ -12,7 +12,7 @@ import {
 import { addTodo } from '../dataflow/modules/todo-module';
 
 const mapStateToProps = state => ({
-  todos: state.todo.todos
+  todoList: state.todo.todoList
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -47,7 +47,19 @@ class TodoList extends Component {
       });
     }
   }
-  
+
+  renderTodoList = () => {
+    const  { todoList } = this.props;
+
+    return (
+      <View style={styles.containerList}>
+        {todoList.map((todo, i) => (
+          <Text key={i} style={styles.itemList}>{todo}</Text>
+        ))}
+      </View>
+    );
+  }
+
   render() {
     const { newTodo } = this.state;
 
@@ -63,15 +75,15 @@ class TodoList extends Component {
             value={newTodo}
             onChange={this.handleChange}
             placeholder='adding a new todo' />
-          <TouchableHighlight style={styles.addButton} underlayColor='#dedede' onPress={this.handlePress}>
+          <TouchableHighlight
+            style={styles.addButton}
+            underlayColor='#dedede'
+            onPress={this.handlePress}
+          >
             <Text>Add</Text>
           </TouchableHighlight>
         </View>
-        <View style={styles.containerList}>
-          {this.props.todos.map((todo, i) => (
-            <Text key={i} style={styles.itemList}>{todo}</Text>
-          ))}
-        </View>
+        {this.renderTodoList()}
       </ScrollView>
     );
   }

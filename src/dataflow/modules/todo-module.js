@@ -3,7 +3,7 @@ const ADD_TODO = 'ADD_TODO';
 
 // Initial state
 const initialState = {
-  todos: [],
+  todoList: [],
   todo: ''
 };
 
@@ -11,7 +11,10 @@ export default function (state = initialState, action) {
   switch (action.type) {
     case ADD_TODO:
       return {
-        todos: [...state.todos, action.info]
+        todoList: [
+          action.info,
+          ...state.todoList
+        ]
       };
     default:
       return state;
