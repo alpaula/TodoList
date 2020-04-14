@@ -8,8 +8,18 @@ import {
   TextInput,
   TouchableHighlight,
 } from 'react-native';
+import 'react-native-get-random-values';
+import { v4 as uuidv4 } from 'uuid';
 
-import { addTodo } from '../dataflow/modules/todo-module';
+// Component
+import ListItem from './TodoList';
+
+// Redux
+import {
+  addTodo,
+  deleteTodo,
+  checkedTodo,
+} from '../dataflow/modules/todo-module';
 
 const mapStateToProps = state => ({
   todoList: state.todo.todoList
@@ -19,6 +29,12 @@ const mapDispatchToProps = dispatch => ({
   addTodo: (info) => {
     dispatch(addTodo(info));
   },
+  deleteTodo: (info) => {
+    dispatch(deleteTodo(info));
+  },
+  checkedTodo: (info) => {
+    dispatch(checkedTodo(info));
+  }
 });
 
 class TodoList extends Component {
@@ -40,24 +56,39 @@ class TodoList extends Component {
   handlePress = () => {
     const { newTodo } = this.state;
 
+    const todoItem = {
+      text: newTodo,
+      id: uuidv4(),
+      isChecked: false
+    }
+
     if (newTodo !== '') {
-      this.props.addTodo(newTodo);
+      this.props.addTodo(todoItem);
       this.setState({
         newTodo: ''
       });
     }
   }
 
-  renderTodoList = () => {
-    const  { todoList } = this.props;
+  handleDeleteTodo = (item) => {
+    this.props.deleteTodo(item);
+  }
 
-    return (
-      <View style={styles.containerList}>
-        {todoList.map((todo, i) => (
-          <Text key={i} style={styles.itemList}>{todo}</Text>
-        ))}
-      </View>
-    );
+  handleChecked = (todo) => {
+    const { todoList } = this.props;
+
+    const newList = todoList.map(item => {
+      if (item.id === todo.id) {
+        return {
+          ...item,
+          isChecked: !item.isChecked
+        }
+      } else {
+        return item
+      }
+    });
+
+    this.props.checkedTodo(newList);
   }
 
   render() {
@@ -83,7 +114,11 @@ class TodoList extends Component {
             <Text>Add</Text>
           </TouchableHighlight>
         </View>
-        {this.renderTodoList()}
+        <ListItem
+          todoList={this.props.todoList}
+          handleChecked={this.handleChecked}
+          handleDeleteTodo={this.handleDeleteTodo}
+        />
       </ScrollView>
     );
   }
@@ -131,8 +166,34 @@ const styles = StyleSheet.create({
     height: 'auto'
   },
   itemList: {
-    color: '#4f4f4f'
-  }
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5,
+    padding: 6,
+    backgroundColor: '#ebedee',
+    borderRadius: 5,
+  },
+  itemListCheck: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 20,
+    height: 20,
+    marginRight: 10,
+    borderWidth: 1,
+    borderColor: 	'#31303a',
+    borderStyle: 'solid',
+    borderRadius: 4,
+  },
+  itemListText: {
+    width: '80%',
+    color: '#4f4f4f',
+  },
+  itemListButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '10%',
+  },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(TodoList);
