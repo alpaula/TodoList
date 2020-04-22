@@ -9,6 +9,7 @@ import {
 
 // Image
 import checkIcon from '../assets/check.png';
+import checkGrayIcon from '../assets/check-gray.png'
 import deleteIcon from '../assets/clear.png';
 
 class ListItems extends Component {
@@ -41,7 +42,7 @@ class ListItems extends Component {
                 onPress={handleChecked}
                 underlayColor='transparent'
               >
-                {<Image style={{ width: 11, height: 11 }} source={todo.isChecked && checkIcon} />}
+                {<Image style={{ width: 11, height: 11 }} source={todo.isChecked ? checkIcon : checkGrayIcon} />}
               </TouchableHighlight>
               <Text style={styles.itemListText}>{todo.text}</Text>
               <TouchableHighlight
@@ -68,7 +69,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 5,
-    padding: 6,
+    padding: 10,
     backgroundColor: '#ebedee',
     borderRadius: 5,
   },

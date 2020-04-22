@@ -2,27 +2,33 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
   StyleSheet,
-  ScrollView,
   View,
   Text,
   TextInput,
   TouchableHighlight,
+  Image,
 } from 'react-native';
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
 
 // Component
-import ListItem from './TodoList';
+import TodoList from './TodoList';
+
+// Images
+import arrowIcon from '../assets/arrow.png';
 
 // Redux
 import {
   addTodo,
   deleteTodo,
   checkedTodo,
+  updateStep,
+  selectTodoList,
 } from '../dataflow/modules/todo-module';
 
 const mapStateToProps = state => ({
-  todoList: state.todo.todoList
+  allTodoLists: state.todo.allTodoLists,
+  selectedTodoList: state.todo.selectedTodoList
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -34,10 +40,16 @@ const mapDispatchToProps = dispatch => ({
   },
   checkedTodo: (info) => {
     dispatch(checkedTodo(info));
-  }
+  },
+  updateStep: (info) => {
+    dispatch(updateStep(info));
+  },
+  selectTodoList: (info) => {
+    dispatch(selectTodoList(info));
+  },
 });
 
-class TodoList extends Component {
+class Dashboard extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -75,31 +87,28 @@ class TodoList extends Component {
   }
 
   handleChecked = (todo) => {
-    const { todoList } = this.props;
+    this.props.checkedTodo(todo.id);
+  }
 
-    const newList = todoList.map(item => {
-      if (item.id === todo.id) {
-        return {
-          ...item,
-          isChecked: !item.isChecked
-        }
-      } else {
-        return item
-      }
-    });
-
-    this.props.checkedTodo(newList);
+  handleBack = () => {
+    this.props.updateStep('all-lists');
+    this.props.selectTodoList('');
   }
 
   render() {
+    const { selectedTodoList, allTodoLists } = this.props;
     const { newTodo } = this.state;
 
+    const list = allTodoLists.find(item => item.id === selectedTodoList);
+    console.log(this.props);
+
     return (
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={styles.scrollView}
-      >
-        <Text style={styles.sectionTitle}>Todo list</Text>
+      <View style={styles.container}>
+        <View style={styles.backButton} onStartShouldSetResponder={this.handleBack}>
+          <Image style={styles.backButtonIcon} source={arrowIcon} />
+          <Text style={styles.backButtonText}>Back</Text>
+        </View>
+        <Text style={styles.sectionTitle}>{list.name} - Todo list</Text>
         <View style={styles.containerInput}>
           <TextInput
             style={styles.input}
@@ -114,20 +123,31 @@ class TodoList extends Component {
             <Text>Add</Text>
           </TouchableHighlight>
         </View>
-        <ListItem
-          todoList={this.props.todoList}
+        <TodoList
+          todoList={list.items}
           handleChecked={this.handleChecked}
           handleDeleteTodo={this.handleDeleteTodo}
         />
-      </ScrollView>
+      </View>
     );
   }
 };
 
 const styles = StyleSheet.create({
-  scrollView: {
+  container: {
     flex: 1,
-    padding: 50,
+  },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  backButtonIcon: {
+    width: 20,
+    height: 20,
+    marginRight: 4
+  },
+  backButtonText: {
+    color: 'purple'
   },
   sectionTitle: {
     fontSize: 24,
@@ -161,39 +181,7 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 5,
     backgroundColor: '#cecece'
-  },
-  containerList: {
-    height: 'auto'
-  },
-  itemList: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 5,
-    padding: 6,
-    backgroundColor: '#ebedee',
-    borderRadius: 5,
-  },
-  itemListCheck: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 20,
-    height: 20,
-    marginRight: 10,
-    borderWidth: 1,
-    borderColor: 	'#31303a',
-    borderStyle: 'solid',
-    borderRadius: 4,
-  },
-  itemListText: {
-    width: '80%',
-    color: '#4f4f4f',
-  },
-  itemListButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '10%',
-  },
+  }
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(TodoList);
+export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);
