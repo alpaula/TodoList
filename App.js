@@ -15,7 +15,7 @@ import { Provider } from 'react-redux';
 import store from './src/dataflow/store';
 
 // Components
-import Todo from './src/pages/Todo';
+import Dashboard from './src/pages/Dashboard';
 
 class App extends Component {
   constructor() {
@@ -27,7 +27,7 @@ class App extends Component {
     return (
       <SafeAreaView style={styles.container}>
         <Provider store={store}>
-          <Todo />
+          <Dashboard />
         </Provider>
       </SafeAreaView>
     );
